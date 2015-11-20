@@ -3,7 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:context="http://www.springframework.org/schema/context"
     xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:aop="http://www.springframework.org/schema/aop"
     xsi:schemaLocation="
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
     http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
     http://www.springframework.org/schema/context
@@ -30,6 +33,19 @@
     </bean>
 	
 	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/> 
+	<!-- token 权限校验 start -->
+	<bean  id="tokenManager" class="com.pubtools.sercurity.DefaultTokenManager"/>
+	<bean id="securityAspect" class="com.pubtools.sercurity.SecurityAspect">
+	    <property name="tokenManager" ref="tokenManager"/>
+	    <property name="tokenName" value="X-Token"/>
+	</bean>
+	 
+	<aop:config>
+	    <aop:aspect ref="securityAspect">
+	        <aop:around method="execute" pointcut="@annotation(org.springframework.web.bind.annotation.RequestMapping)"/>
+	    </aop:aspect>
+	</aop:config>
+	<!-- token 权限校验 end -->
 	
 	<!-- 定义接口入参的转化 -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
