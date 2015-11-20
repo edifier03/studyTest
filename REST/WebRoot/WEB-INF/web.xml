@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="4.0" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_4_0.xsd"
+	id="rest">
+  	<display-name>rest</display-name>	
+  
+	<welcome-file-list>
+    	<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+  	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+		/WEB-INF/conf/applicationContext_Common.xml
+		</param-value>
+  	</context-param>
+ 
+  
+  	<servlet>
+		<servlet-name>rest</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/conf/springtest-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>-1</load-on-startup>
+  	</servlet>
+  
+	<servlet-mapping>
+		<servlet-name>rest</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<listener>  
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
+    </listener> 
+	
+	<filter>
+		<filter-name>corsFilter</filter-name>
+		<filter-class>com.pubtools.rest.CorsFilter</filter-class>
+		<init-param>
+			<param-name>allowOrigin</param-name>
+			<param-value>http://localhost:8086,http://192.168.160.134:8086</param-value>
+		</init-param>
+		<init-param>
+			<param-name>allowMethods</param-name>
+			<param-value>GET,POST,PUT,DELETE,OPTIONS</param-value>
+		</init-param>
+		<init-param>
+			<param-name>allowCredentials</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>allowHeaders</param-name>
+			<param-value>Content-Type,JSONP,x-token,JSON</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>corsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+</web-app>
