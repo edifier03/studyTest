@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pubtools.rest.Response;
+import com.pubtools.sercurity.IgnoreSecurity;
 import com.zhoutao.mvc.eg.bean.TestBean;
 import com.zhoutao.mvc.rest.bean.AdvertiserParam;
 
@@ -60,6 +61,7 @@ public class AdvertiserController {
 	 * jsonP 方式 传输样例
 	 */
 	@RequestMapping(value="/advertiserP/{id}",method=RequestMethod.GET)
+	
 	public void getAdvertiserP(HttpServletRequest request,HttpServletResponse response,  
 		@PathVariable("id") String advertiserId){
 		System.out.println("here & id =" +request.getHeader("x-token"));
@@ -97,6 +99,7 @@ public class AdvertiserController {
 	 * 自定义validate 
 	 */
 	@RequestMapping(value="/advValidate",method=RequestMethod.POST)
+	@IgnoreSecurity()
 	public Response advValidate(@RequestBody @Valid AdvertiserParam advertiserParam) {
 		
 		System.out.println(advertiserParam.getId());
