@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="RestWeb"
+  id="myeclipse.1447384127355"
+  context-root="/RestWeb"
+  j2ee-spec="6.0"
+  archive="RestWeb.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
