@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/security 
+			http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+	    <property name="location">  
+	        <value>/WEB-INF/conf/application.properties</value>  
+	    </property>  
+	    <property name="fileEncoding" value="utf-8" />  
+	</bean>
+	<!-- SessionToken用 -->
+	<bean id="sessionCouchbaseClient" class="com.pubtools.sercurity.core2.RedisTokenClient">
+		<property name="redisurl" value="${session.redisbase.uri}" />
+		<property name="redisport" value="${session.redisbase.port}" />
+	</bean>
+	<!-- ====== 配置认证管理器 ====== -->
+	<bean id="sessionTokenAuthenticationProvider"
+		class="com.pubtools.sercurity.core2.SessionTokenAuthenticationProvider">
+		<property name="client" ref="sessionCouchbaseClient" />
+	</bean>
+	
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider ref="sessionTokenAuthenticationProvider" />
+	</sec:authentication-manager>
+	
+	<bean id="sessionTokenEntryPoint" 
+		class="com.pubtools.sercurity.core2.SessionTokenAuthenticationEntryPoint" />
+	
+	<bean id="sessionTokenFilter" class="com.pubtools.sercurity.core2.SessionTokenAuthenticationFilter">
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationEntryPoint" ref="sessionTokenEntryPoint" />
+	</bean>
+	
+	<!-- 获取SessionToken中的信息用 -->
+	<bean id="userAuthManager" class="com.pubtools.sercurity.DefaultTokenManager">
+		<property name="redisClient" ref="sessionCouchbaseClient" />
+		<property name="sessionTimeout" value="${session.timeout}" />
+	</bean>
+	
+	<sec:http pattern="/security/**" create-session="never"
+		authentication-manager-ref="authenticationManager"
+		entry-point-ref="sessionTokenEntryPoint" >
+		<!-- 不允许匿名访问 -->
+		<sec:anonymous enabled="false" />
+		
+		<sec:intercept-url pattern="/security/advertiser" access="ROLE_ADMIN,ROLE_OPERATOR" />
+		<sec:custom-filter ref="sessionTokenFilter" after="PRE_AUTH_FILTER" />
+	</sec:http>
+</beans>
+
