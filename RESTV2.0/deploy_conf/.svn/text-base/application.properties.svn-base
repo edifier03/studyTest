@@ -1,0 +1,15 @@
+######couchbase######
+session.couchbase.uri=http://192.168.19.13:8091/pools
+session.couchbase.bucket=ams_session_token
+# \u5355\u4f4d:\u79d2
+session.timeout=3600
+
+###############################################################
+## Log Aspect
+###############################################################
+LogAspect.beforeLevel=INFO
+LogAspect.includeParameter=True
+LogAspect.parameterLevel=INFO
+LogAspect.afterLevel=INFO
+LogAspect.aroundLevel=INFO
+LogAspect.throwingLevel=ERROR

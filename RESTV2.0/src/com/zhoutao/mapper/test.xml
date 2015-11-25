@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.mvc.test">
+	<insert id="doInsert" parameterType="com.zhoutao.mvc.eg.bean.TestBean">
+  		INSERT INTO USERTABLE (ID,NAME) VALUES(#{id},${name})
+	</insert>
+	
+	<select id="selectList2" parameterType="String" resultType="com.zhoutao.mvc.eg.bean.TestBean" useCache="false">
+  		select id,name from USERTABLE2 where id = #{item}
+	</select>
+	<cache type="com.pubtools.cache.MybatisRedisCache"/>
+	<update id="doUpd" parameterType="com.zhoutao.mvc.eg.bean.TestBean" flushCache="true">
+  		UPDATE USERTABLE2 SET name = 'ca3' where id ='1'
+	</update>
+	<select id="selectList" parameterType="String" resultType="com.zhoutao.mvc.eg.bean.TestBean">
+  		select id,name from USERTABLE where id = #{item}
+	</select>
+</mapper>
