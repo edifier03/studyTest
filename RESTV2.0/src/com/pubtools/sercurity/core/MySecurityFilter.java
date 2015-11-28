@@ -12,6 +12,9 @@ import javax.servlet.ServletResponse;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 
@@ -28,6 +31,7 @@ public class MySecurityFilter extends AbstractSecurityInterceptor implements Fil
     @Override  
     public void doFilter(ServletRequest request, ServletResponse response,  
             FilterChain chain) throws IOException, ServletException {  
+    	// 查看是否已认证过
         FilterInvocation fi = new FilterInvocation(request, response, chain);  
         invoke(fi);  
     }  
@@ -39,10 +43,12 @@ public class MySecurityFilter extends AbstractSecurityInterceptor implements Fil
         //执行Collection<ConfigAttribute> attributes = SecurityMetadataSource.getAttributes(object);  
         //2.是否拥有权限  
         //this.accessDecisionManager.decide(authenticated, object, attributes);  
-        InterceptorStatusToken token = super.beforeInvocation(fi);  
+//    	super.setAuthenticationManager((AuthenticationManager) new MyUserDetailServiceImpl());
+    	
         try {  
             fi.getChain().doFilter(fi.getRequest(), fi.getResponse());  
         } finally {  
+         InterceptorStatusToken token = super.beforeInvocation(fi);  
             super.afterInvocation(token, null);  
         }  
     }  

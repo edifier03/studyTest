@@ -1,9 +1,18 @@
 package com.redis;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.management.relation.Role;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.pubtools.sercurity.bean.LoginUserInfo;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -41,7 +50,7 @@ public class RedisClient {
 	        config.setMaxWait(1000l); 
 	        config.setTestOnBorrow(false); 
 	        
-	        jedisPool = new JedisPool(config,"192.168.160.133",6379);
+	        jedisPool = new JedisPool(config,"192.168.189.128",6379);
 	    }
 	    
 	    /** 
@@ -69,11 +78,37 @@ public class RedisClient {
 //	        ListOperate(); 
 //	        SetOperate();
 //	        SortedSetOperate();
-	        HashOperate(); 
+//	        HashOperate(); 
+	    	setToken();
 	        jedisPool.returnResource(jedis);
 	        shardedJedisPool.returnResource(shardedJedis);
 	    } 
-
+	    private void setToken()
+	    {
+	    	 System.out.println("清空库中所有数据："+jedis.flushDB());
+	    	 LoginUserInfo info = new LoginUserInfo();
+	    	 info.setUserId(123);
+	    	 info.setUserName("zt");
+//	    	 Role role = new Role(null, null);
+//	    	 role.setRoleName("ROLE_ADMIN");
+//	    	 info.setRole(role);
+	    	 ObjectMapper mapper = new ObjectMapper();
+	    	 String json = "";
+	    	 try {
+				 json = mapper.writeValueAsString(info);
+				 System.out.println(json);
+			} catch (JsonGenerationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	 jedis.set("123", json);
+	    }
 	      private void KeyOperate() {
 	    	  System.out.println("======================key=========================="); 
 	          // 清空数据 

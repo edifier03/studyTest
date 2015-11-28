@@ -8,21 +8,27 @@
 			http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 	
 
-	<security:http   use-expressions="true" pattern="/**"
-		authentication-manager-ref="myAuthenticationManager"
-		entry-point-ref="mySecurityEntryPoint">
-		<!-- 不允许匿名访问 -->
-		<security:anonymous enabled="false" />
-		<security:intercept-url pattern="/security/advertiser" access="ROLE_ADMIN"/>
-		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="securityInterceptorFilter" />
-	   <!-- 替换默认的LogoutFilter -->
-	</security:http>
+	
 	<!-- 对密码进行MD5编码 -->
 	<bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" id="passwordEncoder"/>
 	<bean id="mySecurityEntryPoint" 
 		class="com.pubtools.sercurity.core.MySecurityEntryPoint" />
 	
-	 
+
+    <security:authentication-manager alias="myAuthenticationManager">  
+        <security:authentication-provider ref="myUserDetailServiceImpl" />  
+    </security:authentication-manager> 
+    <bean id="myAccessDecisionManager" class="com.pubtools.sercurity.core.MyAccessDecisionManager"/>
+    <bean id="mySecurityMetadataSource" class="com.pubtools.sercurity.core.MySecurityMetadataSource">  
+        
+    </bean>  
+    <bean id="myUserDetailServiceImpl"
+		class="com.pubtools.sercurity.core2.SessionTokenAuthenticationProvider">
+	</bean>
+    <!-- bean id="myUserDetailServiceImpl" class="com.pubtools.sercurity.core.MyUserDetailServiceImpl">  
+       
+    </bean-->  
+    	 
 	 <bean id="securityInterceptorFilter" class="com.pubtools.sercurity.core.MySecurityFilter">  
         <!-- 用户拥有的权限 -->  
         <property name="authenticationManager" ref="myAuthenticationManager" />  
@@ -31,16 +37,14 @@
         <!-- 资源与权限对应关系 -->  
         <property name="securityMetadataSource" ref="mySecurityMetadataSource" />  
     </bean>  
-    <security:authentication-manager alias="myAuthenticationManager">  
-        <security:authentication-provider user-service-ref="myUserDetailServiceImpl" />  
-    </security:authentication-manager> 
-    <bean id="myAccessDecisionManager" class="com.pubtools.sercurity.core.MyAccessDecisionManager"/>
-    <bean id="mySecurityMetadataSource" class="com.pubtools.sercurity.core.MySecurityMetadataSource">  
-        
-    </bean>  
-    <bean id="myUserDetailServiceImpl" class="com.pubtools.sercurity.core.MyUserDetailServiceImpl">  
-       
-    </bean>  
-
+	<security:http   use-expressions="true" pattern="/**"  create-session="never"
+		authentication-manager-ref="myAuthenticationManager"
+		entry-point-ref="mySecurityEntryPoint">
+		<!-- 不允许匿名访问 -->
+		<security:anonymous enabled="false" />
+		<security:intercept-url pattern="/security/advertiser" access="ROLE_ADMIN"/>
+		<security:custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="securityInterceptorFilter" />
+	   <!-- 替换默认的LogoutFilter -->
+	</security:http>
 </beans>
 

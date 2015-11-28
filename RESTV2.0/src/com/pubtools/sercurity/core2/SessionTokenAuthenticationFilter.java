@@ -12,14 +12,17 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
+import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -29,9 +32,20 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author xiaofei.xu
  * 
  */
-public class SessionTokenAuthenticationFilter extends GenericFilterBean {
+public class SessionTokenAuthenticationFilter extends AbstractSecurityInterceptor implements Filter {
 
 	private final static String AMS_SESSION_TOKEN = "Ams-Session-Token";
+	private FilterInvocationSecurityMetadataSource securityMetadataSource;  
+	private AccessDecisionManager accessDecisionManager;
+
+
+	public AccessDecisionManager getAccessDecisionManager() {
+		return accessDecisionManager;
+	}
+
+	public void setAccessDecisionManager(AccessDecisionManager accessDecisionManager) {
+		this.accessDecisionManager = accessDecisionManager;
+	}
 
 	/** 认证管理器 */
 	private AuthenticationManager authenticationManager;
@@ -39,9 +53,11 @@ public class SessionTokenAuthenticationFilter extends GenericFilterBean {
 	/** 认证失败处理器 */
 	private AuthenticationEntryPoint authenticationEntryPoint;
 
-	public void afterPropertiesSet() throws ServletException {
+	public void afterPropertiesSet() throws Exception {
+		super.setAccessDecisionManager(accessDecisionManager);
+		super.setAuthenticationManager(authenticationManager);
 		super.afterPropertiesSet();
-
+		Assert.notNull( this.securityMetadataSource, "securityMetadataSource is required" );
 		Assert.notNull( this.authenticationManager, "AuthenticationManager is required" );
 	}
 
@@ -85,9 +101,13 @@ public class SessionTokenAuthenticationFilter extends GenericFilterBean {
 
 			return;
 		}
-
+		// 此处是为了使用自定义的权限获取
+		FilterInvocation fi = new FilterInvocation(request, response, chain);
+		//调用source 的getAttribute
+		InterceptorStatusToken token1 = super.beforeInvocation(fi);  
+		fi.getChain().doFilter(fi.getRequest(), fi.getResponse());  
 		// 继续处理链
-		chain.doFilter( request, response );
+//		chain.doFilter( request, response );s
 	}
 
 	// ============================================================================
@@ -99,5 +119,34 @@ public class SessionTokenAuthenticationFilter extends GenericFilterBean {
 
 	public void setAuthenticationEntryPoint( AuthenticationEntryPoint authenticationEntryPoint ) {
 		this.authenticationEntryPoint = authenticationEntryPoint;
+	}
+	  public FilterInvocationSecurityMetadataSource getSecurityMetadataSource() {  
+	        return securityMetadataSource;  
+	    }  
+	  
+	    public void setSecurityMetadataSource(FilterInvocationSecurityMetadataSource securityMetadataSource) {  
+	        this.securityMetadataSource = securityMetadataSource;  
+	    }  
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void init(FilterConfig arg0) throws ServletException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Class<? extends Object> getSecureObjectClass() {
+		 return FilterInvocation.class;  
+	}
+
+	@Override
+	public SecurityMetadataSource obtainSecurityMetadataSource() {
+		 return this.securityMetadataSource;  
 	}
 }
