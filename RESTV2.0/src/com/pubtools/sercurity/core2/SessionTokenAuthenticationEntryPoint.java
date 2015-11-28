@@ -39,6 +39,7 @@ public class SessionTokenAuthenticationEntryPoint implements AuthenticationEntry
 				response.flushBuffer();
 		} else {
 				// ÏµÍ³´íÎó
+			System.out.println(authException.getMessage());
 				response.setStatus( HttpStatus.INTERNAL_SERVER_ERROR.value() );
 				response.flushBuffer();
 //				String json = "Error";

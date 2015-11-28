@@ -38,7 +38,7 @@ public class MySecurityEntryPoint implements AuthenticationEntryPoint {
 //				response.getOutputStream().write(r.toString().getBytes( "UTF-8" ));
 //				response.flushBuffer();
 				ObjectMapper mapper = new ObjectMapper();
-				json = mapper.writeValueAsString(new Response().failure("123"));
+				json = mapper.writeValueAsString(new Response().failure(authException.getMessage()));
 				response.getOutputStream().write( json.getBytes( "UTF-8" )  );
 				response.flushBuffer();
 //				throw new ValidationException("123");

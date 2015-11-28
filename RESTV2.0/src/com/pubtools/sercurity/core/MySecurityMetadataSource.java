@@ -46,6 +46,10 @@ public class MySecurityMetadataSource implements FilterInvocationSecurityMetadat
         return true;  
     }  
     //加载所有资源与权限的关系  
+    /**
+     * 系统启动时加载；
+     * 业务逻辑可以从数据库中读取所有的权限关系，并且存储到redis或者其他缓存中
+     */
     private void loadResourceDefine() {  
         if(resourceMap == null) {  
             resourceMap = new HashMap<String, Collection<ConfigAttribute>>();  

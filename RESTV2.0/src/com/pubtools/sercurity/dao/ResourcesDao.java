@@ -13,7 +13,7 @@ public class ResourcesDao {
 		Resources res1 = new Resources();
 		res1.setName("ROLE_ADMIN");
 //		res1.setUrl("/view/admin/*");
-		res1.setUrl("/security/**");
+		res1.setUrl("/security/advertiser");
 		
 		
 		list.add(res1);

@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.util.Assert;
 
 import com.pubtools.sercurity.bean.LoginUserInfo;
+import com.pubtools.sercurity.core.MySecurityMetadataSource;
 
 
 /**
@@ -26,7 +27,7 @@ public class SessionTokenAuthenticationProvider implements AuthenticationProvide
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull( client, "Redis uri is required" );
+	//	Assert.notNull( client, "Redis uri is required" );
 	}
 
 	@Override
@@ -34,6 +35,7 @@ public class SessionTokenAuthenticationProvider implements AuthenticationProvide
 
 		// 获取Ams-Session-Token
 		String sessionToken = (String) authentication.getPrincipal();
+//		Object jsonLoginInfo = client.getJedisPool().getResource().get(sessionToken);
 		Object jsonLoginInfo = client.get( sessionToken );
 
 		if ( jsonLoginInfo == null ) {
@@ -59,10 +61,10 @@ public class SessionTokenAuthenticationProvider implements AuthenticationProvide
 				throw new SessionTokenAuthenticationException( "Json value can not convert to Object.", ex );
 			}
 
-			SessionTokenAuthentication result = new SessionTokenAuthentication(
-					AuthorityUtils.createAuthorityList( new String[] { loginInfo.getRole().toString() } ), sessionToken );
+//			SessionTokenAuthentication result = new SessionTokenAuthentication(
+//					AuthorityUtils.createAuthorityList( new String[] { loginInfo.getRole().toString() } ), sessionToken );
+			SessionTokenAuthentication result = new SessionTokenAuthentication(AuthorityUtils.createAuthorityList( new String[] { "ROLE_ADMIN" } ), sessionToken );
 			result.setAuthenticated( true ); // 已认证
-
 			// 设置详细信息
 			result.setDetails( loginInfo );
 
@@ -79,4 +81,6 @@ public class SessionTokenAuthenticationProvider implements AuthenticationProvide
 	public void setClient( RedisTokenClient client ) {
 		this.client = client;
 	}
+	
+	
 }
